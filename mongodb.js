@@ -17,9 +17,30 @@ MongoClient.connect(connectionURL, { useNewUrlParser : true, useUnifiedTopology:
     const db = client.db(databaseName);
     // console.log(db);
 
-    db.collection('users').insertOne({
-        name: "Joyy",
-        age : 22
+    // db.collection('users').insertOne({
+    //     name: "Joyy",
+    //     age : 22
+    // })
+
+    db.collection('tasks').insertMany([
+        {
+            description : 'Task 1',
+            completed: true
+        },
+        {
+            description : 'Task 2',
+            completed: false
+        },
+        {
+            description : 'Task 3',
+            completed: false   
+        }
+    ], (error, result) => {
+        if(error){
+            console.log("Unable to add")
+        }
+
+        console.log(result.ops);
     })
 });
 
