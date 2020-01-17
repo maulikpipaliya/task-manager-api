@@ -54,21 +54,44 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     //     toArray
     // });
 
-    db.collection('tasks').find({
-        completed: false
-    }).toArray((error, uncompletedTasks) => {
-        console.log(uncompletedTasks);
+    // db.collection('tasks').find({
+    //     completed: false
+    // }).toArray((error, uncompletedTasks) => {
+    //     console.log(uncompletedTasks);
 
+    // })
+
+    // db.collection('tasks').findOne({
+    //     _id : new ObjectID("5e212d1d82545b6a781f32e1")
+    // }, (error, result) => {
+    //     if(!error){
+    //         console.log(result);
+    //     }
+    // });
+
+
+    db.collection('users').updateOne({ 
+        _id : new ObjectID("5e2079fcda0f4840971b40f5")
+    },{
+        $set: { 
+            name: "Maulik Joyy DJ Cool Hha"
+        }
+    }).then((result) => {
+        console.log('Success', result);
+    }).catch((error) => {
+        console.log('Failure', error);
     })
 
-    db.collection('tasks').findOne({
-        _id : new ObjectID("5e212d1d82545b6a781f32e1")
-    }, (error, result) => {
-        if(!error){
-            console.log(result);
-        }
-    });
 
+    db.collection('tasks').updateMany({}, {
+        $set: {
+            completed: true
+        }
+    }).then((result) => {
+        console.log(result);
+    }).catch((error) => {
+        console.log(error);
+    })
 
 });
 
