@@ -69,7 +69,7 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     //     }
     // });
 
-
+/* Update
     db.collection('users').updateOne({ 
         _id : new ObjectID("5e2079fcda0f4840971b40f5")
     },{
@@ -77,7 +77,7 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
             name: "Maulik Joyy DJ Cool Hha"
         }
     }).then((result) => {
-        console.log('Success', result);
+        console.log('Success - ', result.result.nModified, 'rows modified');
     }).catch((error) => {
         console.log('Failure', error);
     })
@@ -88,10 +88,24 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
             completed: true
         }
     }).then((result) => {
-        console.log(result);
+        console.log(result.result.nModified, 'rows modified');
     }).catch((error) => {
         console.log(error);
     })
+*/
+
+/**
+ * Delete operation
+ */
+
+    db.collection('users').deleteMany({
+        age:21
+    }).then( (result) => {
+        console.log(result.deletedCount, 'rows deleted')
+    }).catch ((error) => {
+        console.log(error);
+    })
+
 
 });
 
