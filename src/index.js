@@ -85,18 +85,18 @@ app.patch('/users/:id', async (request, response) => {
 
         const isRequestEmpty = !Object.keys(request.body).length;
 
-        if(isRequestEmpty){
+        if (isRequestEmpty) {
             return response.status(400).send({
                 errorText: "Request body can't be null"
             })
         }
-        
+
         const updates = Object.keys(request.body);
-        const allowedUpdates = ['name','email','age','password'];
+        const allowedUpdates = ['name', 'email', 'age', 'password'];
 
-        const isValidOperation = updates.every((update)=> allowedUpdates.includes(update));
+        const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
-        if(!isValidOperation){
+        if (!isValidOperation) {
             return response.status(400).send({
                 errorText: "Not able to update one of the property"
             })
@@ -109,19 +109,52 @@ app.patch('/users/:id', async (request, response) => {
             useFindAndModify: false
         });
 
-        if(!user){
+        if (!user) {
             response.status(404).send({
                 errorText: "User not found"
             })
-        }   
+        }
 
         response.status(200).send(user)
     } catch (error) {
         response.status(400).send({
-            errorText : "Error caught",
+            errorText: "Error caught",
             errorDetails: error
         })
     }
+});
+
+/**
+ * Delete user
+ */
+
+app.delete('/users/:id', async (request, response) => {
+
+    const requestBody = request.body;
+    const _id = request.params.id;
+
+    try {
+        const user = await User.findByIdAndDelete(_id);
+
+        if (!user) {
+            return response.status(404).send({
+                response: "Couldn't find ID"
+            })
+        }
+
+        return response.status(200).send({
+            response: "Record deleted"
+        })
+
+
+    } catch (error) {
+        return response.status(400).send({
+            errorText: "Couldn't perform delete operation",
+            errorDetails: error
+        })
+    }
+
+
 });
 
 /**
@@ -208,30 +241,30 @@ app.patch('/tasks/:id', async (request, response) => {
     const isRequestEmpty = !Object.keys(requestBody).length;
     const isValidOperation = Object.keys(requestBody).every((req) => allowedUpdates.includes(req));
 
-    if(isValidOperation && !isRequestEmpty){
+    if (isValidOperation && !isRequestEmpty) {
 
         try {
             const task = await Task.findByIdAndUpdate(request.params.id, requestBody, {
-                new : true,
+                new: true,
                 runValidators: true,
                 useFindAndModify: false
-            });        
+            });
 
-            console.log('lolwa',task);
+            console.log('lolwa', task);
 
-            if(!task){
+            if (!task) {
                 return response.status(400).send({
                     errorText: "Task not found"
                 })
             }
-            else{
+            else {
                 response.status(400).send({
                     responseType: "Success",
-                    responseData: task 
+                    responseData: task
                 })
             }
-        
-            
+
+
         } catch (error) {
             return response.status(400).send({
                 errorText: "Couldn't update",
@@ -239,9 +272,38 @@ app.patch('/tasks/:id', async (request, response) => {
             })
         }
     }
-    else{
+    else {
         return response.status(400).send({
             errorText: "Request empty or invalid update"
+        })
+    }
+});
+
+
+/**
+ * Delete task
+ */
+
+app.delete('/tasks/:id', async (request, response) => {
+
+    const requestBody = request.body;
+    const _id = request.params.id;
+
+    try {
+        const task = await Task.findByIdAndDelete(_id);
+
+        if (!task) {
+            return response.status(404).send({
+                response: "Couldn't find ID"
+            })
+        }
+        return response.status(200).send({
+            response: "Record deleted"
+        })
+    } catch (error) {
+        return response.status(400).send({
+            errorText: "Couldn't perform delete operation",
+            errorDetails: error
         })
     }
 });
