@@ -1,3 +1,4 @@
+
 const express = require('express');
 require('./db/mongoose')
 const User = require('./models/user');
@@ -71,6 +72,59 @@ app.get('/users/:id', async (request, response) => {
 
 
 /**
+ * Update user
+ */
+
+app.patch('/users/:id', async (request, response) => {
+    try {
+        // if(request.body.isEmpty()){
+        //     response.status(400).send({
+        //         errorText: "Body empty"
+        //     })
+        // }
+
+        const isRequestEmpty = !Object.keys(request.body).length;
+
+        if(isRequestEmpty){
+            return response.status(400).send({
+                errorText: "Request body can't be null"
+            })
+        }
+        
+        const updates = Object.keys(request.body);
+        const allowedUpdates = ['name','email','age','password'];
+
+        const isValidOperation = updates.every((update)=> allowedUpdates.includes(update));
+
+        if(!isValidOperation){
+            return response.status(400).send({
+                errorText: "Not able to update one of the property"
+            })
+        }
+
+        console.log(request.body);
+        const user = await User.findByIdAndUpdate(request.params.id, request.body, {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false
+        });
+
+        if(!user){
+            response.status(404).send({
+                errorText: "User not found"
+            })
+        }   
+
+        response.status(200).send(user)
+    } catch (error) {
+        response.status(400).send({
+            errorText : "Error caught",
+            errorDetails: error
+        })
+    }
+});
+
+/**
  * --------------------
  * TASK APIs
  * --------------------
@@ -140,6 +194,57 @@ app.get('/tasks/:id', async (request, response) => {
     }
     // response.status(200).send(request.body);
 })
+
+
+/**
+ * Update task by ID
+ */
+
+app.patch('/tasks/:id', async (request, response) => {
+    const requestBody = request.body;
+    console.log(requestBody);
+
+    const allowedUpdates = ['description', 'completed'];
+    const isRequestEmpty = !Object.keys(requestBody).length;
+    const isValidOperation = Object.keys(requestBody).every((req) => allowedUpdates.includes(req));
+
+    if(isValidOperation && !isRequestEmpty){
+
+        try {
+            const task = await Task.findByIdAndUpdate(request.params.id, requestBody, {
+                new : true,
+                runValidators: true,
+                useFindAndModify: false
+            });        
+
+            console.log('lolwa',task);
+
+            if(!task){
+                return response.status(400).send({
+                    errorText: "Task not found"
+                })
+            }
+            else{
+                response.status(400).send({
+                    responseType: "Success",
+                    responseData: task 
+                })
+            }
+        
+            
+        } catch (error) {
+            return response.status(400).send({
+                errorText: "Couldn't update",
+                errorDetails: error
+            })
+        }
+    }
+    else{
+        return response.status(400).send({
+            errorText: "Request empty or invalid update"
+        })
+    }
+});
 
 app.listen(port, () => {
     console.log('Listening on ', port);
